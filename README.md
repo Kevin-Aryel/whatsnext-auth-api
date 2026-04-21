@@ -31,7 +31,7 @@ Swagger UI: http://localhost:8080/swagger-ui.html
 | POST | /api/v1/auth/login | Public | Login (5 req/min/IP) |
 | POST | /api/v1/auth/refresh | Public | Rotate refresh token |
 | POST | /api/v1/auth/logout | Bearer | Logout + blacklist |
-| GET | /api/v1/users/me | Bearer | Authenticated profile |
+| GET | /api/v1/user | Bearer | Authenticated profile |
 | GET | /actuator/health | Public | Health check |
 
 ## Key Design Decisions

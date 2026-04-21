@@ -12,17 +12,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 @Tag(name = "User", description = "Authenticated user operations")
 public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/me")
+    @GetMapping
     @Operation(summary = "Get authenticated user profile",
                security = @SecurityRequirement(name = "bearerAuth"))
-    public UserProfileResponse getMe(Authentication authentication) {
+    public UserProfileResponse getUser(Authentication authentication) {
         return userService.getProfile(authentication.getName());
     }
 }

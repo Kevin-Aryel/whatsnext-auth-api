@@ -30,7 +30,7 @@ class UserControllerTest {
     void getMe_withValidToken_returns200WithProfile() throws Exception {
         String accessToken = registerAndGetAccessToken("me@example.com");
 
-        mockMvc.perform(get("/api/v1/users/me")
+        mockMvc.perform(get("/api/v1/user")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("me@example.com"))
@@ -40,13 +40,13 @@ class UserControllerTest {
 
     @Test
     void getMe_withoutToken_returns401() throws Exception {
-        mockMvc.perform(get("/api/v1/users/me"))
+        mockMvc.perform(get("/api/v1/user"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     void getMe_withInvalidToken_returns401() throws Exception {
-        mockMvc.perform(get("/api/v1/users/me")
+        mockMvc.perform(get("/api/v1/user")
                         .header("Authorization", "Bearer invalid.token.here"))
                 .andExpect(status().isUnauthorized());
     }
@@ -63,7 +63,7 @@ class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new RefreshRequest(refreshToken))));
 
-        mockMvc.perform(get("/api/v1/users/me")
+        mockMvc.perform(get("/api/v1/user")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isUnauthorized());
     }

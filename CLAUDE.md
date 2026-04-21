@@ -63,7 +63,7 @@ JWT_SECRET deve ter mínimo 32 caracteres. Nunca commitar no repositório.
 | POST   | /api/v1/auth/login         | Público | Login (rate: 5 req/min/IP)     |
 | POST   | /api/v1/auth/refresh       | Público | Rotação de refresh token       |
 | POST   | /api/v1/auth/logout        | Bearer  | Logout com blacklist           |
-| GET    | /api/v1/users/me           | Bearer  | Perfil do usuário autenticado  |
+| GET    | /api/v1/user               | Bearer  | Perfil do usuário autenticado  |
 | GET    | /actuator/health           | Público | Health check para o Render     |
 
 ## Estrutura de pacotes
