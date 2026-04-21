@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/authapi
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+  jpa:
+    show-sql: false
+
+jwt:
+  secret: ${JWT_SECRET:bG9jYWxEZXZTZWNyZXRLZXkxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ=}
+
+cors:
+  allowed-origins: http://localhost:5173

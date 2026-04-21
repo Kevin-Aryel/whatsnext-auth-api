@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: whatsnext-auth-api
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+jwt:
+  access-expiration: ${JWT_ACCESS_EXPIRATION:900}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800}
+
+rate-limit:
+  login:
+    capacity: 5
+    refill-seconds: 60
+  register:
+    capacity: 3
+    refill-seconds: 60
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
