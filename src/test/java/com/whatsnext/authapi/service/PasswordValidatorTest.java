@@ -17,7 +17,7 @@ class PasswordValidatorTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"short1A!", "tiny"})
+    @ValueSource(strings = {"Sh0rt!", "tiny"})
     void validate_withTooShortPassword_shouldThrow(String password) {
         assertThatThrownBy(() -> validator.validate(password))
                 .isInstanceOf(PasswordTooWeakException.class)
