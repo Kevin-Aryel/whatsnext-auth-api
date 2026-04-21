@@ -1,6 +1,7 @@
 package com.whatsnext.authapi.config;
 
 import com.whatsnext.authapi.filter.JwtAuthenticationFilter;
+import com.whatsnext.authapi.filter.RateLimitFilter;
 import com.whatsnext.authapi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +35,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final RateLimitFilter rateLimitFilter;
     private final UserRepository userRepository;
 
     @Value("${cors.allowed-origins}")
@@ -57,6 +59,7 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedEntryPoint()))
                 .authenticationProvider(authenticationProvider())
+                .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
