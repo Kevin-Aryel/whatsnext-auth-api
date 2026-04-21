@@ -58,6 +58,8 @@ Coverage report: `target/site/jacoco/index.html`
 Set `JWT_SECRET` manually in the Render dashboard (min 32 chars).  
 Override `DB_URL` with the JDBC format after the database is provisioned.
 
+**Limitation:** The Render free tier spins down after 15 min of inactivity (~30s cold start on next request). Scheduled token cleanup jobs (`TokenCleanupService` at 03:00 and 03:30 UTC) will not run on nights when the instance is sleeping.
+
 ## Environment Variables
 
 | Variable | Required in prod | Default |

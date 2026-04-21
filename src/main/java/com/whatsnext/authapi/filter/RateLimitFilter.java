@@ -36,19 +36,23 @@ public class RateLimitFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String ip = extractClientIp(request);
 
-        Bucket bucket = switch (path) {
-            case "/api/v1/auth/login" ->
-                    loginBuckets.computeIfAbsent(ip, k -> buildBucket(rateLimitConfig.getLogin()));
-            case "/api/v1/auth/register" ->
-                    registerBuckets.computeIfAbsent(ip, k -> buildBucket(rateLimitConfig.getRegister()));
+        RateLimitConfig.EndpointConfig matchedConfig = switch (path) {
+            case "/api/v1/auth/login" -> rateLimitConfig.getLogin();
+            case "/api/v1/auth/register" -> rateLimitConfig.getRegister();
             default -> null;
         };
+
+        Bucket bucket = null;
+        if (matchedConfig != null) {
+            Map<String, Bucket> buckets = path.endsWith("/login") ? loginBuckets : registerBuckets;
+            bucket = buckets.computeIfAbsent(ip, k -> buildBucket(matchedConfig));
+        }
 
         if (bucket != null && !bucket.tryConsume(1)) {
             response.setStatus(429);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setHeader("Retry-After",
-                    String.valueOf(rateLimitConfig.getLogin().getRefillSeconds()));
+                    String.valueOf(matchedConfig.getRefillSeconds()));
             ErrorResponse error = ErrorResponse.of(
                     429, "Too Many Requests", "Rate limit exceeded. Try again later.", path);
             response.getWriter().write(objectMapper.writeValueAsString(error));
