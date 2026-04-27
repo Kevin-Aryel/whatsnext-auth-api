@@ -1,4 +1,4 @@
-package com.whatsnext.authapi.service;
+package com.whatsnext.authapi.unit.service;
 
 import com.whatsnext.authapi.exception.PasswordTooWeakException;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.whatsnext.authapi.controller;
+package com.whatsnext.authapi.unit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.whatsnext.authapi.dto.request.RefreshRequest;

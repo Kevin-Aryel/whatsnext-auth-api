@@ -1,4 +1,4 @@
-package com.whatsnext.authapi.service;
+package com.whatsnext.authapi.unit.service;
 
 import com.whatsnext.authapi.config.JwtConfig;
 import com.whatsnext.authapi.domain.entity.RefreshToken;
