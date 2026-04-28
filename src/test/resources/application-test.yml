@@ -11,4 +11,4 @@ jwt:
   secret: dGVzdFNlY3JldEtleUZvclVuaXRUZXN0czEyMzQ1Njc4OTAxMjM0NTY=
 
 cors:
-  allowed-origins: http://localhost:5173
+  allowed-origins: "*"
