@@ -57,7 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             if (tokenBlacklistService.isBlacklisted(token)) {
-                writeError(response, request, 401, "Token has been revoked");
+                writeError(response, 401, "Token has been revoked");
                 return;
             }
 
@@ -72,21 +72,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (TokenExpiredException e) {
-            writeError(response, request, 401, "Token has expired");
+            writeError(response, 401, "Token has expired");
             return;
         } catch (InvalidTokenException e) {
-            writeError(response, request, 401, "Invalid token");
+            writeError(response, 401, "Invalid token");
             return;
         }
 
         filterChain.doFilter(request, response);
     }
 
-    private void writeError(HttpServletResponse response, HttpServletRequest request,
-                             int status, String message) throws IOException {
+    private void writeError(HttpServletResponse response, int status, String message) throws IOException {
         response.setStatus(status);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        ErrorResponse error = ErrorResponse.of(status, "Unauthorized", message, request.getRequestURI());
+        ErrorResponse error = ErrorResponse.of("UNAUTHORIZED", "Unauthorized", message);
         response.getWriter().write(objectMapper.writeValueAsString(error));
     }
 }

@@ -54,7 +54,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             response.setHeader("Retry-After",
                     String.valueOf(matchedConfig.getRefillSeconds()));
             ErrorResponse error = ErrorResponse.of(
-                    429, "Too Many Requests", "Rate limit exceeded. Try again later.", path);
+                    "RATE_LIMIT_EXCEEDED", "Too Many Requests", "Rate limit exceeded. Try again later.");
             response.getWriter().write(objectMapper.writeValueAsString(error));
             return;
         }
