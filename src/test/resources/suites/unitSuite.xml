@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Unit Tests" verbose="1" parallel="false">
+
+    <test name="Service Tests">
+        <classes>
+            <class name="com.whatsnext.authapi.unit.service.JwtServiceTest"/>
+            <class name="com.whatsnext.authapi.unit.service.PasswordValidatorTest"/>
+            <class name="com.whatsnext.authapi.unit.service.AuthServiceTest"/>
+        </classes>
+    </test>
+
+    <test name="Controller Tests">
+        <classes>
+            <class name="com.whatsnext.authapi.unit.controller.AuthControllerTest"/>
+            <class name="com.whatsnext.authapi.unit.controller.UserControllerTest"/>
+        </classes>
+    </test>
+
+</suite>
