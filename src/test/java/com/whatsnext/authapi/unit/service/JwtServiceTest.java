@@ -4,6 +4,7 @@ import com.whatsnext.authapi.config.JwtConfig;
 import com.whatsnext.authapi.domain.entity.User;
 import com.whatsnext.authapi.domain.enums.Role;
 import com.whatsnext.authapi.exception.InvalidTokenException;
+import com.whatsnext.authapi.service.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

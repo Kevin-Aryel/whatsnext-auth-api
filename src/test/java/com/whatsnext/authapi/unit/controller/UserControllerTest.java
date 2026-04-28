@@ -3,7 +3,7 @@ package com.whatsnext.authapi.unit.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.whatsnext.authapi.dto.request.RefreshRequest;
 import com.whatsnext.authapi.dto.request.RegisterRequest;
-import org.junit.jupiter.api.Test;
+import org.testng.annotations.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;

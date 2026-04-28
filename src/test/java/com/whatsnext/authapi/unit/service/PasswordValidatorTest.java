@@ -1,10 +1,9 @@
 package com.whatsnext.authapi.unit.service;
 
 import com.whatsnext.authapi.exception.PasswordTooWeakException;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-
+import com.whatsnext.authapi.service.PasswordValidator;
+import org.testng.annotations.Parameters;
+import org.testng.annotations.Test;
 import static org.assertj.core.api.Assertions.*;
 
 class PasswordValidatorTest {
@@ -16,8 +15,8 @@ class PasswordValidatorTest {
         assertThatNoException().isThrownBy(() -> validator.validate("Secure@123"));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"Sh0rt!", "tiny"})
+    @Test
+    @Parameters({"Sh0rt!", "tiny"})
     void validate_withTooShortPassword_shouldThrow(String password) {
         assertThatThrownBy(() -> validator.validate(password))
                 .isInstanceOf(PasswordTooWeakException.class)
