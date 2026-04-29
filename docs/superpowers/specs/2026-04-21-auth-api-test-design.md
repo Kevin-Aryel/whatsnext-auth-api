@@ -384,30 +384,87 @@ AssertJ (`assertThat`) pode ser mantido nas assertions — é agnóstico de fram
 
 ## 11. Ordem de execução
 
+> **Update 2026-04-28:** Estrutura revisada com base no que foi implementado.
+> Divergências em relação à spec original estão marcadas com ⚠️.
+
 ```
-Fase 1 — Migração para TestNG
-  1.1 Excluir JUnit5 do pom.xml, adicionar TestNG + REST Assured + Allure
-  1.2 Adicionar H2ServerConfig.java
-  1.3 Ajustar application-test.yml para URL TCP
-  1.4 Converter 5 classes de teste existentes para TestNG
-  1.5 Configurar testng-unit.xml + Surefire — verificar mvn test verde
+Fase 1 — Infraestrutura de testes                                    STATUS
+  1.1 pom.xml migrado (TestNG, REST Assured, Allure, Failsafe)        ✅ FEITO
+  1.2 H2ServerConfig.java (@Profile("test"), TCP porta 9092)          ✅ FEITO
+  1.3 application-test.yml movido para src/test/resources             ✅ FEITO
+      URL atualizada para H2 TCP                                      ✅ FEITO
+  1.4 suites/unitSuite.xml + suites/e2eSuite.xml criados              ✅ FEITO
+      ⚠️ pom.xml ainda aponta para testng-unit.xml / testng-e2e.xml   ✅ CORRIGIDO
+  1.5 allure.properties criado                                        ✅ FEITO
+  1.6 config-local.properties em src/test/resources (no .gitignore)   ✅ FEITO
+  1.7 ConfigReader criado em com.whatsnext.authapi.config              ✅ FEITO
+      ⚠️ spec previa E2EConfig — adotado ConfigReader como canônico
 
-Fase 2 — Infraestrutura E2E
-  2.1 Criar RequestSpecFactory
-  2.2 Criar UserFactory + TestDataHelper (com hash pré-computado)
-  2.3 Criar AuthHelper
-  2.4 Configurar testng-e2e.xml + Failsafe + Spring Boot Plugin
-  2.5 Verificar mvn verify sobe/desce servidor corretamente
+Fase 2 — Helpers E2E                                                 STATUS
+  ⚠️ Pacote adotado: e2e/data/factory/ e e2e/data/utils/
+     Spec previa: e2e/helper/
+  2.1 RequestSpecFactory (unauthenticatedSpec / authenticatedSpec)     ✅ FEITO
+  2.2 UserDbRecord (record de dados de teste)                          ✅ FEITO
+      ⚠️ Spec previa UserFactory com strings soltas
+  2.3 UserFactory (AtomicInteger counter, retorna UserDbRecord)        ✅ FEITO
+      ⚠️ Hash BCrypt gerado em tempo de execução (não pré-computado)
+  2.4 UserDataPreload (insert via JDBC, BCrypt em runtime)             ✅ FEITO
+      ⚠️ Spec previa TestDataHelper — adotado UserDataPreload
+  2.5 AuthDataPreload (login via API, retorna tokens)                  ✅ FEITO
+      ⚠️ Spec previa AuthHelper — adotado AuthDataPreload
+      ⚠️ Limitação mapeada: se /login quebrar, testes dependentes falham
+  2.6 AuthClient (encapsula todas as chamadas HTTP, retorna Response)  ✅ FEITO
+      ⚠️ Não previsto na spec original
 
-Fase 3 — Testes E2E
-  3.1 RegisterE2ETest (9 cenários)
-  3.2 LoginE2ETest (4 cenários)
-  3.3 RefreshE2ETest (4 cenários)
-  3.4 LogoutE2ETest (2 cenários)
-  3.5 UserE2ETest (4 cenários)
+Fase 3 — Contratos e Schemas                                         STATUS
+  3.1 auth-response-schema.json (padrão OAuth2/RFC6749)               ✅ FEITO
+  3.2 error-response-schema.json (padrão OPF: errors[]+meta)          ✅ FEITO
+  3.3 RegisterDataProvider (invalidFields, invalidPasswords)           ✅ FEITO
+      LoginDataProvider                                                ⏳ PENDENTE
+      RefreshDataProvider                                              ⏳ PENDENTE
 
-Fase 4 — Allure + CI
-  4.1 allure.properties + anotações nos testes
-  4.2 Allure Maven Plugin
-  4.3 Atualizar ci.yml com os 3 jobs (unit → e2e → deploy)
+Fase 4 — Atualização da API para padrão OPF                         STATUS
+  4.1 ErrorResponse → substituir por errors[{code,title,detail}]+meta  ✅ FEITO
+  4.2 GlobalExceptionHandler → mapear codes OPF por exceção            ✅ FEITO
+      EMAIL_ALREADY_EXISTS → 409
+      VALIDATION_ERROR → 422 (Bean Validation)
+      PASSWORD_TOO_WEAK → 422 (PasswordTooWeakException)
+      UNAUTHORIZED → 401
+  4.3 CORS local e test → allowed-origins: "*"                         ✅ FEITO
+
+Fase 5 — Testes E2E                                                  STATUS
+  5.1 RegisterE2ETest (cenários válido + 409 + providers 422)         ✅ FEITO
+  5.2 LoginE2ETest                                                     ⏳ PENDENTE
+  5.3 RefreshE2ETest                                                    ⏳ PENDENTE
+  5.4 LogoutE2ETest                                                     ⏳ PENDENTE
+  5.5 UserE2ETest                                                       ⏳ PENDENTE
+
+Fase 6 — CI/CD                                                       STATUS
+  6.1 ci.yml: jobs unit → e2e → deploy                                ⏳ PENDENTE
+  6.2 README: seção Running Tests atualizada                           ⏳ PENDENTE
+  6.3 Verificar mvn verify completo (23+ cenários passando)            ⏳ PENDENTE
 ```
+
+---
+
+## 12. Decisões técnicas adotadas (divergências da spec)
+
+| Spec original | Decisão adotada | Motivo |
+|---|---|---|
+| `e2e/helper/` | `e2e/data/factory/` e `e2e/data/utils/` | Melhor separação de responsabilidades |
+| `AuthHelper` | `AuthDataPreload` | Nomenclatura mais expressiva |
+| `TestDataHelper` | `UserDataPreload` | Nomenclatura mais expressiva |
+| Hash BCrypt pré-computado | Hash gerado em runtime via `BCryptPasswordEncoder` | Evita string hardcoded no repositório |
+| `UserFactory` com strings soltas | `UserFactory` retorna `UserDbRecord` | Factory real, isolamento dos dados |
+| `E2EConfig` | `ConfigReader` | Mais genérico, reutilizável |
+| `testng-unit.xml` na raiz | `suites/unitSuite.xml` em subpasta | Organização dos recursos de teste |
+| `ErrorResponse` flat | OPF `errors[{code,title,detail}]+meta` | Padronização com ecossistema OPF |
+| Sem `AuthClient` | `AuthClient` encapsula todas as chamadas HTTP | Separação entre setup e assertion |
+
+---
+
+## 13. Limitações conhecidas
+
+- **`AuthDataPreload` depende de `/login`**: se o endpoint de login estiver com bug, todos os testes que dependem de autenticação prévia falharão em cascata. Solução futura: `AuthTokenPreload` que gera JWT direto via `JwtService`, usado apenas quando `/login` está sob investigação.
+- **Rate limiting não testado via E2E**: buckets in-memory resetam com reinício; comportamento não-determinístico.
+- **BCrypt strength=12 em runtime**: `UserDataPreload` computa o hash uma vez na inicialização da classe (campo estático). Em execuções com muitos testes paralelos, isso não é problema — mas adiciona ~1s de overhead na primeira execução.

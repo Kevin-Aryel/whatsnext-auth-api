@@ -107,7 +107,6 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
@@ -161,6 +160,17 @@
                         <configuration>
                             <profiles>test</profiles>
                             <useTestClasspath>true</useTestClasspath>
+                            <jvmArguments>
+                                -Dspring.datasource.url=jdbc:h2:tcp://localhost:9092/mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+                                -Dspring.datasource.driver-class-name=org.h2.Driver
+                                -Dspring.datasource.username=sa
+                                -Dspring.datasource.password=
+                                -Dspring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+                                -Djwt.secret=dGVzdFNlY3JldEtleUZvclVuaXRUZXN0czEyMzQ1Njc4OTAxMjM0NTY=
+                                -Dcors.allowed-origins=*
+                                -Drate-limit.register.capacity=100
+                                -Drate-limit.login.capacity=100
+                            </jvmArguments>
                         </configuration>
                     </execution>
                     <execution>
@@ -191,9 +201,16 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
                     <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/e2eSuite.xml</suiteXmlFile>
+                        <suiteXmlFile>src/test/resources/suites/e2eSuite.xml</suiteXmlFile>
                     </suiteXmlFiles>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-testng</artifactId>
+                        <version>3.2.5</version>
+                    </dependency>
+                </dependencies>
                 <executions>
                     <execution>
                         <goals>

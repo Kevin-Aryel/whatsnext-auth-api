@@ -10,4 +10,4 @@ jwt:
   secret: ${JWT_SECRET:bG9jYWxEZXZTZWNyZXRLZXkxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ=}
 
 cors:
-  allowed-origins: http://localhost:5173
+  allowed-origins: "*"

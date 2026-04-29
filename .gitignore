@@ -7,7 +7,7 @@ out/
 node_modules/
 *.properties
 docs/*
-
+config-local.properties
 ### STS ###
 .apt_generated
 .classpath
@@ -37,3 +37,4 @@ build/
 
 ### VS Code ###
 .vscode/
+/docs/superpowers/specs/
