@@ -15,12 +15,11 @@ import com.whatsnext.authapi.service.AuthService;
 import com.whatsnext.authapi.service.JwtService;
 import com.whatsnext.authapi.service.PasswordValidator;
 import com.whatsnext.authapi.service.TokenBlacklistService;
-import org.junit.jupiter.api.BeforeEach;
-import org.testng.annotations.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -30,7 +29,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
     @Mock private UserRepository userRepository;
@@ -40,8 +38,10 @@ class AuthServiceTest {
     private AuthService authService;
     private BCryptPasswordEncoder encoder;
 
-    @BeforeEach
+    @BeforeMethod
     void setUp() {
+        MockitoAnnotations.openMocks(this);
+
         JwtConfig config = new JwtConfig();
         config.setSecret("dGVzdFNlY3JldEtleUZvclVuaXRUZXN0czEyMzQ1Njc4OTAxMjM0NTY=");
         config.setAccessExpiration(900L);
@@ -52,9 +52,9 @@ class AuthServiceTest {
         encoder = new BCryptPasswordEncoder(12);
 
         authService = new AuthService(
-                userRepository, refreshTokenRepository,
-                tokenBlacklistService, jwtService,
-                passwordValidator, encoder, config
+            userRepository, refreshTokenRepository,
+            tokenBlacklistService, jwtService,
+            passwordValidator, encoder, config
         );
     }
 
@@ -65,7 +65,7 @@ class AuthServiceTest {
         when(refreshTokenRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         AuthResponse response = authService.register(
-                new RegisterRequest("Test User", "new@example.com", "Secure@123")
+            new RegisterRequest("Test User", "new@example.com", "Secure@123")
         );
 
         assertThat(response.accessToken()).isNotBlank();
@@ -78,8 +78,8 @@ class AuthServiceTest {
         when(userRepository.existsByEmail("dup@example.com")).thenReturn(true);
 
         assertThatThrownBy(() -> authService.register(
-                new RegisterRequest("Test", "dup@example.com", "Secure@123")))
-                .isInstanceOf(EmailAlreadyExistsException.class);
+            new RegisterRequest("Test", "dup@example.com", "Secure@123")))
+            .isInstanceOf(EmailAlreadyExistsException.class);
     }
 
     @Test
@@ -87,25 +87,25 @@ class AuthServiceTest {
         when(userRepository.existsByEmail(any())).thenReturn(false);
 
         assertThatThrownBy(() -> authService.register(
-                new RegisterRequest("Test", "x@example.com", "weak")))
-                .isInstanceOf(PasswordTooWeakException.class);
+            new RegisterRequest("Test", "x@example.com", "weak")))
+            .isInstanceOf(PasswordTooWeakException.class);
     }
 
     @Test
     void login_withValidCredentials_shouldReturnTokens() {
         User user = User.builder()
-                .id(UUID.randomUUID())
-                .email("user@example.com")
-                .passwordHash(encoder.encode("Secure@123"))
-                .role(Role.USER)
-                .name("User")
-                .build();
+            .id(UUID.randomUUID())
+            .email("user@example.com")
+            .passwordHash(encoder.encode("Secure@123"))
+            .role(Role.USER)
+            .name("User")
+            .build();
 
         when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
         when(refreshTokenRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         AuthResponse response = authService.login(
-                new LoginRequest("user@example.com", "Secure@123")
+            new LoginRequest("user@example.com", "Secure@123")
         );
 
         assertThat(response.accessToken()).isNotBlank();
@@ -116,56 +116,56 @@ class AuthServiceTest {
         when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> authService.login(
-                new LoginRequest("ghost@example.com", "Secure@123")))
-                .isInstanceOf(InvalidTokenException.class)
-                .hasMessage("Invalid credentials");
+            new LoginRequest("ghost@example.com", "Secure@123")))
+            .isInstanceOf(InvalidTokenException.class)
+            .hasMessage("Invalid credentials");
     }
 
     @Test
     void login_withWrongPassword_shouldThrowInvalidTokenException() {
         User user = User.builder()
-                .id(UUID.randomUUID())
-                .email("user@example.com")
-                .passwordHash(encoder.encode("Correct@123"))
-                .role(Role.USER)
-                .name("User")
-                .build();
+            .id(UUID.randomUUID())
+            .email("user@example.com")
+            .passwordHash(encoder.encode("Correct@123"))
+            .role(Role.USER)
+            .name("User")
+            .build();
 
         when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
 
         assertThatThrownBy(() -> authService.login(
-                new LoginRequest("user@example.com", "Wrong@123")))
-                .isInstanceOf(InvalidTokenException.class)
-                .hasMessage("Invalid credentials");
+            new LoginRequest("user@example.com", "Wrong@123")))
+            .isInstanceOf(InvalidTokenException.class)
+            .hasMessage("Invalid credentials");
     }
 
     @Test
     void refresh_withUsedToken_shouldThrowInvalidTokenException() {
         RefreshToken usedToken = RefreshToken.builder()
-                .token("used-token")
-                .used(true)
-                .expiresAt(Instant.now().plusSeconds(3600))
-                .user(User.builder().id(UUID.randomUUID()).build())
-                .build();
+            .token("used-token")
+            .used(true)
+            .expiresAt(Instant.now().plusSeconds(3600))
+            .user(User.builder().id(UUID.randomUUID()).build())
+            .build();
 
         when(refreshTokenRepository.findByToken("used-token")).thenReturn(Optional.of(usedToken));
 
         assertThatThrownBy(() -> authService.refresh(new RefreshRequest("used-token")))
-                .isInstanceOf(InvalidTokenException.class);
+            .isInstanceOf(InvalidTokenException.class);
     }
 
     @Test
     void refresh_withExpiredToken_shouldThrowTokenExpiredException() {
         RefreshToken expiredToken = RefreshToken.builder()
-                .token("expired-token")
-                .used(false)
-                .expiresAt(Instant.now().minusSeconds(1))
-                .user(User.builder().id(UUID.randomUUID()).build())
-                .build();
+            .token("expired-token")
+            .used(false)
+            .expiresAt(Instant.now().minusSeconds(1))
+            .user(User.builder().id(UUID.randomUUID()).build())
+            .build();
 
         when(refreshTokenRepository.findByToken("expired-token")).thenReturn(Optional.of(expiredToken));
 
         assertThatThrownBy(() -> authService.refresh(new RefreshRequest("expired-token")))
-                .isInstanceOf(TokenExpiredException.class);
+            .isInstanceOf(TokenExpiredException.class);
     }
 }

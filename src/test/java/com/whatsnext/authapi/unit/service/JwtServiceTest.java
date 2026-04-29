@@ -5,8 +5,8 @@ import com.whatsnext.authapi.domain.entity.User;
 import com.whatsnext.authapi.domain.enums.Role;
 import com.whatsnext.authapi.exception.InvalidTokenException;
 import com.whatsnext.authapi.service.JwtService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import java.util.UUID;
 
@@ -17,7 +17,7 @@ class JwtServiceTest {
     private JwtService jwtService;
     private User user;
 
-    @BeforeEach
+    @BeforeMethod
     void setUp() {
         JwtConfig config = new JwtConfig();
         config.setSecret("dGVzdFNlY3JldEtleUZvclVuaXRUZXN0czEyMzQ1Njc4OTAxMjM0NTY=");
@@ -26,12 +26,12 @@ class JwtServiceTest {
         jwtService = new JwtService(config);
 
         user = User.builder()
-                .id(UUID.randomUUID())
-                .email("test@example.com")
-                .name("Test User")
-                .role(Role.USER)
-                .passwordHash("irrelevant")
-                .build();
+            .id(UUID.randomUUID())
+            .email("test@example.com")
+            .name("Test User")
+            .role(Role.USER)
+            .passwordHash("irrelevant")
+            .build();
     }
 
     @Test
@@ -50,12 +50,12 @@ class JwtServiceTest {
     void generateAccessToken_shouldBeInvalidForDifferentUser() {
         String token = jwtService.generateAccessToken(user);
         User other = User.builder()
-                .id(UUID.randomUUID())
-                .email("other@example.com")
-                .name("Other")
-                .role(Role.USER)
-                .passwordHash("x")
-                .build();
+            .id(UUID.randomUUID())
+            .email("other@example.com")
+            .name("Other")
+            .role(Role.USER)
+            .passwordHash("x")
+            .build();
         assertThat(jwtService.isTokenValid(token, other)).isFalse();
     }
 
@@ -76,12 +76,12 @@ class JwtServiceTest {
     void extractSubject_withTamperedToken_shouldThrowInvalidTokenException() {
         String token = jwtService.generateAccessToken(user) + "tampered";
         assertThatThrownBy(() -> jwtService.extractSubject(token))
-                .isInstanceOf(InvalidTokenException.class);
+            .isInstanceOf(InvalidTokenException.class);
     }
 
     @Test
     void extractSubject_withMalformedToken_shouldThrowInvalidTokenException() {
         assertThatThrownBy(() -> jwtService.extractSubject("not.a.jwt"))
-                .isInstanceOf(InvalidTokenException.class);
+            .isInstanceOf(InvalidTokenException.class);
     }
 }
