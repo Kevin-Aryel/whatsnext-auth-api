@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["accessToken", "refreshToken", "tokenType", "expiresIn"],
+  "additionalProperties": false,
+  "properties": {
+    "accessToken": {
+      "type": "string",
+      "minLength": 100
+    },
+    "refreshToken": {
+      "type": "string",
+      "minLength": 36,
+      "maxLength": 36
+    },
+    "tokenType": {
+      "type": "string",
+      "enum": ["Bearer"]
+    },
+    "expiresIn": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}
