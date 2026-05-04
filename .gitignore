@@ -8,6 +8,7 @@ node_modules/
 *.properties
 docs/*
 config-local.properties
+.allure
 ### STS ###
 .apt_generated
 .classpath
