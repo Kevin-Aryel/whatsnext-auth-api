@@ -125,3 +125,11 @@ jobs:
             -Dsonar.projectKey=kevinaryeldev_whatsnext-auth-api \
             -Dsonar.organization=kevinaryeldev \
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+
+  deploy:
+    needs: [e2e-tests, sonar]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Deploy to Render
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
