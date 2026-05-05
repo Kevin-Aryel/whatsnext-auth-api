@@ -51,3 +51,38 @@ jobs:
           name: allure-unit-results
           path: target/allure-results/
           retention-days: 7
+
+  e2e-tests:
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run E2E tests
+        run: mvn verify -DskipUnitTests=true
+
+      - name: Generate Allure report
+        if: always()
+        run: mvn allure:report
+
+      - name: Upload Allure E2E results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-e2e-results
+          path: target/allure-results/
+          retention-days: 7
+
+      - name: Upload Allure E2E report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-e2e-report
+          path: target/site/allure-maven-plugin/
+          retention-days: 7
