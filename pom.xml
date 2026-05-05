@@ -173,9 +173,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <skip>${skipUnitTests}</skip>
+                    <disableXmlReport>true</disableXmlReport>
+                    <useFile>false</useFile>
                     <suiteXmlFiles>
-                        <disableXmlReport>true</disableXmlReport>
-                        <useFile>false</useFile>
                         <suiteXmlFile>src/test/resources/suites/unitSuite.xml</suiteXmlFile>
                     </suiteXmlFiles>
                 </configuration>
