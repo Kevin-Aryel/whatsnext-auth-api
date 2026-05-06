@@ -1,6 +1,6 @@
 package com.whatsnext.authapi.e2e.data.utils;
 
-import com.whatsnext.authapi.config.ConfigReader;
+import com.whatsnext.authapi.e2e.config.E2ETestConfig;
 import com.whatsnext.authapi.e2e.data.factory.UserCredentialRecord;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -10,11 +10,11 @@ import java.util.UUID;
 public class UserDataPreload {
 
     private static final String PASSWORD_HASH =
-            new BCryptPasswordEncoder(12).encode(ConfigReader.get("USER_PASS"));
+            new BCryptPasswordEncoder(12).encode(E2ETestConfig.USER_PASS);
 
     public static void insertUser(UserCredentialRecord user) throws SQLException {
         try (Connection conn = DriverManager.getConnection(
-                ConfigReader.get("JDBC_URL"), ConfigReader.get("DB_USER"), ConfigReader.get("DB_PASS"));
+                E2ETestConfig.JDBC_URL, E2ETestConfig.DB_USER, E2ETestConfig.DB_PASS);
              PreparedStatement ps = conn.prepareStatement(
                      "INSERT INTO users (id, name, email, password_hash, role, created_at, updated_at)" +
                              " VALUES (?, ?, ?, ?, 'USER', NOW(), NOW())")) {

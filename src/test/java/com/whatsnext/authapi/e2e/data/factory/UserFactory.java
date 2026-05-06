@@ -1,6 +1,6 @@
 package com.whatsnext.authapi.e2e.data.factory;
 
-import com.whatsnext.authapi.config.ConfigReader;
+import com.whatsnext.authapi.e2e.config.E2ETestConfig;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class UserFactory {
@@ -12,7 +12,7 @@ public class UserFactory {
         return new UserCredentialRecord(
                 "Test User",
                 "user." + id + "@test.com",
-                ConfigReader.get("USER_PASS")
+                E2ETestConfig.USER_PASS
         );
     }
 }
