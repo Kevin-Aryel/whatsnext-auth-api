@@ -6,6 +6,7 @@ target/
 out/
 node_modules/
 *.properties
+!src/test/resources/config.properties
 docs/*
 config-local.properties
 .allure

@@ -9,15 +9,17 @@ public class ConfigReader {
 
     private static Properties load() {
         Properties p = new Properties();
-        try (InputStream in = ConfigReader.class
-                .getClassLoader()
-                .getResourceAsStream("config-local.properties")) {
-            if (in == null) throw new RuntimeException("config-local.properties não encontrado");
-            p.load(in);
-        } catch (IOException e) {
-            throw new RuntimeException("Falha ao carregar config-local.properties", e);
-        }
+        loadFile(p, "config.properties");
+        loadFile(p, "config-local.properties");
         return p;
+    }
+
+    private static void loadFile(Properties p, String filename) {
+        try (InputStream in = ConfigReader.class.getClassLoader().getResourceAsStream(filename)) {
+            if (in != null) p.load(in);
+        } catch (IOException e) {
+            // ignore
+        }
     }
 
     public static String get(String key) {
