@@ -67,28 +67,33 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Run E2E tests
-        run: mvn verify -DskipUnitTests=true
-
-      - name: Generate Allure report
-        if: always()
-        run: mvn allure:report
+      - name: Run E2E tests + generate Allure report
+        run: mvn verify allure:report -DskipUnitTests=true
 
       - name: Upload Allure E2E results
-        uses: actions/upload-artifact@v4
         if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: allure-e2e-results
           path: target/allure-results/
           retention-days: 7
 
       - name: Upload Allure E2E report
-        uses: actions/upload-artifact@v4
         if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: allure-e2e-report
           path: target/site/allure-maven-plugin/
           retention-days: 7
+
+      - name: Upload Spring Boot app log (debug)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spring-boot-e2e-log
+          path: target/spring-boot.log
+          retention-days: 3
+          if-no-files-found: ignore
 
   sonar:
     needs: unit-tests

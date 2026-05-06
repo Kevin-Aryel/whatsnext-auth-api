@@ -1,6 +1,6 @@
 package com.whatsnext.authapi.e2e.data.factory;
 
-import com.whatsnext.authapi.config.ConfigReader;
+import com.whatsnext.authapi.e2e.config.E2ETestConfig;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
@@ -8,7 +8,7 @@ import io.restassured.specification.RequestSpecification;
 
 public class RequestSpecFactory {
 
-    private static final String BASE_URL = ConfigReader.get("api.base.url");
+    private static final String BASE_URL = E2ETestConfig.API_BASE_URL;
 
     public static RequestSpecification unauthenticatedSpec() {
         return new RequestSpecBuilder()
