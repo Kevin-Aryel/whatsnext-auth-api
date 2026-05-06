@@ -51,8 +51,7 @@ public class RegisterE2ETest {
     @Test(dataProvider = "invalidFields", dataProviderClass = RegisterDataProvider.class)
     @Story("Validação de campos inválidos")
     public void registerWithInvalidFields(
-            String scenario, UserCredentialRecord user,
-            String expectedCode, String expectedTitle, String expectedDetail) {
+            String scenario, UserCredentialRecord user, String expectedTitle, String expectedDetail) {
         authClient.register(user)
                 .statusCode(SC_UNPROCESSABLE_ENTITY)
                 .body(
@@ -66,8 +65,7 @@ public class RegisterE2ETest {
     @Test(dataProvider = "invalidPasswords", dataProviderClass = RegisterDataProvider.class)
     @Story("Validação de senha fraca")
     public void registerWithInvalidPassword(
-            String scenario, UserCredentialRecord user,
-            String expectedCode, String expectedTitle, String expectedDetail) {
+            String scenario, UserCredentialRecord user, String expectedTitle, String expectedDetail) {
         authClient.register(user)
                 .statusCode(SC_UNPROCESSABLE_ENTITY)
                 .body(

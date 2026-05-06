@@ -11,37 +11,37 @@ public class RegisterDataProvider {
                 {
                         "sem maiúscula",
                         new UserCredentialRecord("Test User", "user@test.com", "test@1234!"),
-                        "PASSWORD_TOO_WEAK", "Password Too Weak",
+                        "Password Too Weak",
                         "Must contain at least one uppercase letter"
                 },
                 {
                         "sem dígito",
                         new UserCredentialRecord("Test User", "user@test.com", "Test@ABCD!"),
-                        "PASSWORD_TOO_WEAK", "Password Too Weak",
+                        "Password Too Weak",
                         "Must contain at least one number"
                 },
                 {
                         "sem caractere especial",
                         new UserCredentialRecord("Test User", "user@test.com", "Test12345"),
-                        "PASSWORD_TOO_WEAK", "Password Too Weak",
+                        "Password Too Weak",
                         "Must contain at least one special character"
                 },
                 {
                         "menos de 8 caracteres",
                         new UserCredentialRecord("Test User", "user@test.com", "T@1a"),
-                        "VALIDATION_ERROR", "Validation Error",
+                        "Validation Error",
                         "Password must be between 8 and 72 characters"
                 },
                 {
                         "senha vazia",
                         new UserCredentialRecord("Test User", "user@test.com", ""),
-                        "VALIDATION_ERROR", "Validation Error",
+                        "Validation Error",
                         "Password is required"
                 },
                 {
                         "senha nula",
                         new UserCredentialRecord("Test User", "user@test.com", null),
-                        "VALIDATION_ERROR", "Validation Error",
+                        "Validation Error",
                         "Password is required"
                 }
         };
