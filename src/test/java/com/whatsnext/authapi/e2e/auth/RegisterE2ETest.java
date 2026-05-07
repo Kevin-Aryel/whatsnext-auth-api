@@ -30,7 +30,7 @@ public class RegisterE2ETest {
     @Story("Cadastro com dados válidos")
     public void registerWithValidData() {
         authClient.register(UserFactory.validUserCredentials())
-                .statusCode(SC_NO_CONTENT);
+                .statusCode(SC_CREATED);
     }
 
     @Test
