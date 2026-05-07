@@ -53,37 +53,37 @@ public class RegisterDataProvider {
                 {
                         "email inválido",
                         new UserCredentialRecord("Test User", "not-an-email", "Test@1234!"),
-                        "VALIDATION_ERROR", "Validation Error",
+                        "Validation Error",
                         "Invalid email format"
                 },
                 {
                         "email vazio",
                         new UserCredentialRecord("Test User", "", "Test@1234!"),
-                        "VALIDATION_ERROR", "Validation Error",
+                        "Validation Error",
                         "Email is required"
                 },
                 {
                         "email nulo",
                         new UserCredentialRecord("Test User", null, "Test@1234!"),
-                        "VALIDATION_ERROR", "Validation Error",
+                        "Validation Error",
                         "Email is required"
                 },
                 {
                         "nome vazio",
                         new UserCredentialRecord("", "user@test.com", "Test@1234!"),
-                        "VALIDATION_ERROR", "Validation Error",
+                        "Validation Error",
                         "Name is required"
                 },
                 {
                         "nome menor que 2 caracteres",
                         new UserCredentialRecord("A", "user@test.com", "Test@1234!"),
-                        "VALIDATION_ERROR", "Validation Error",
+                        "Validation Error",
                         "Name must be between 2 and 100 characters"
                 },
                 {
                         "nome nulo",
                         new UserCredentialRecord(null, "user@test.com", "Test@1234!"),
-                        "VALIDATION_ERROR", "Validation Error",
+                        "Validation Error",
                         "Name is required"
                 }
         };
