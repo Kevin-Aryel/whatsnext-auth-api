@@ -49,7 +49,7 @@ public class LogoutE2ETest {
                 .body("errors[0].code",   equalTo(UNAUTHORIZED_CODE),
                         "errors[0].title",  equalTo(UNAUTHORIZED_TITLE),
                         "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL),
-                        JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
                 );
     }
 }

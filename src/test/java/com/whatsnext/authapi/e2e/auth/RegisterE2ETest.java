@@ -44,7 +44,7 @@ public class RegisterE2ETest {
                         "errors[0].code",   equalTo(String.valueOf(SC_CONFLICT)),
                         "errors[0].title",  equalTo("Conflict"),
                         "errors[0].detail", containsString("Email already registered"),
-                        JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
                 );
     }
 
@@ -58,7 +58,7 @@ public class RegisterE2ETest {
                         "errors[0].code",equalTo(String.valueOf(SC_UNPROCESSABLE_ENTITY)),
                         "errors[0].title",  equalTo(expectedTitle),
                         "errors[0].detail", containsString(expectedDetail),
-                        JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
                 );
     }
 
@@ -72,7 +72,7 @@ public class RegisterE2ETest {
                         "errors[0].code", equalTo(String.valueOf(SC_UNPROCESSABLE_ENTITY)),
                         "errors[0].title",  equalTo(expectedTitle),
                         "errors[0].detail", containsString(expectedDetail),
-                        JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
                 );
     }
 }

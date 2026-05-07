@@ -57,7 +57,7 @@ public class RefreshE2ETest {
                 .body("errors[0].code",   equalTo(UNAUTHORIZED_CODE),
                         "errors[0].title",  equalTo(UNAUTHORIZED_TITLE),
                         "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL),
-                        JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"));
+                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"));
     }
 
     @Test
@@ -72,17 +72,17 @@ public class RefreshE2ETest {
                 .body("errors[0].code",   equalTo(UNAUTHORIZED_CODE),
                         "errors[0].title",  equalTo(UNAUTHORIZED_TITLE),
                         "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL),
-                        JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"));
+                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"));
     }
 
     @Test(dataProvider = "invalidRefreshTokens", dataProviderClass = RefreshDataProvider.class)
     @Story("Token inválido")
-    public void refresh_invalidToken_returns401(String token, String expectedDetail) {
+    public void refreshWithInvalidToken(String token, String expectedDetail) {
         authClient.refresh(token)
                 .statusCode(SC_UNAUTHORIZED)
                 .body("errors[0].code",   equalTo(UNAUTHORIZED_CODE),
                         "errors[0].title",  equalTo(UNAUTHORIZED_TITLE),
                         "errors[0].detail", equalTo(expectedDetail),
-                        JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"));
+                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"));
     }
 }

@@ -45,7 +45,7 @@ public class UserE2ETest {
                 .statusCode(SC_OK)
                 .body("email", equalTo(existingUser.email()),
                         "role",  equalTo("USER"),
-                        JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/user-profile-schema.json")
+                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/user-profile-schema.json")
                 );
     }
 
@@ -57,7 +57,7 @@ public class UserE2ETest {
                 .body("errors[0].code",   equalTo(UNAUTHORIZED_CODE),
                         "errors[0].title",  equalTo(UNAUTHORIZED_TITLE),
                         "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL),
-                        JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
                 );
     }
 
@@ -69,7 +69,7 @@ public class UserE2ETest {
                 .body("errors[0].code",   equalTo(UNAUTHORIZED_CODE),
                         "errors[0].title",  equalTo(UNAUTHORIZED_TITLE),
                         "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL),
-                        JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
                 );
     }
 
@@ -86,7 +86,7 @@ public class UserE2ETest {
                 .body("errors[0].code",   equalTo(UNAUTHORIZED_CODE),
                         "errors[0].title",  equalTo(UNAUTHORIZED_TITLE),
                         "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL),
-                        JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
                 );
     }
 }

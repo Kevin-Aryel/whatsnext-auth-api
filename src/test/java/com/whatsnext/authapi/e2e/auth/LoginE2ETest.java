@@ -47,7 +47,7 @@ public class LoginE2ETest {
                         "errors[0].code", equalTo(String.valueOf(SC_UNAUTHORIZED)),
                         "errors[0].title", equalTo(INVALID_CREDENTIALS_DETAIL),
                         "errors[0].detail", equalTo(""),
-                        JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
                 );
     }
 
@@ -60,7 +60,7 @@ public class LoginE2ETest {
                         "errors[0].code", equalTo(String.valueOf(SC_UNAUTHORIZED)),
                         "errors[0].title", equalTo(INVALID_CREDENTIALS_DETAIL),
                         "errors[0].detail", equalTo(""),
-                        JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
                 );
     }
 
@@ -73,7 +73,7 @@ public class LoginE2ETest {
                         "errors[0].code", equalTo(String.valueOf(SC_UNPROCESSABLE_ENTITY)),
                         "errors[0].title", equalTo("Validation Error"),
                         "errors[0].detail", equalTo(""),
-                        JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
                 );
     }
 }
