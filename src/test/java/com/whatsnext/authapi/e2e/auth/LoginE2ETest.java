@@ -72,7 +72,7 @@ public class LoginE2ETest {
                 .body(
                         "errors[0].code", equalTo(String.valueOf(SC_UNPROCESSABLE_ENTITY)),
                         "errors[0].title", equalTo("Validation Error"),
-                        "errors[0].detail", equalTo(""),
+                        "errors[0].detail", equalTo(expectedDetail),
                         "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
                 );
     }
