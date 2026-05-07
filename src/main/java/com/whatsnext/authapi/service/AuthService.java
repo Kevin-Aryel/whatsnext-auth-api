@@ -84,10 +84,12 @@ public class AuthService {
         Date expiration = jwtService.extractExpiration(accessToken);
         tokenBlacklistService.addToBlacklist(accessToken, expiration);
 
-        refreshTokenRepository.findByToken(refreshTokenValue).ifPresent(rt -> {
-            rt.setUsed(true);
-            refreshTokenRepository.save(rt);
-        });
+        if (refreshTokenValue != null && !refreshTokenValue.isBlank()) {
+            refreshTokenRepository.findByToken(refreshTokenValue).ifPresent(rt -> {
+                rt.setUsed(true);
+                refreshTokenRepository.save(rt);
+            });
+        }
     }
 
     private AuthResponse generateTokenPair(User user) {
