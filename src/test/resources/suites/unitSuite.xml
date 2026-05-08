@@ -17,4 +17,10 @@
         </classes>
     </test>
 
+    <test name="Filter Tests">
+        <classes>
+            <class name="com.whatsnext.authapi.unit.filter.RateLimitFilterTest"/>
+        </classes>
+    </test>
+
 </suite>

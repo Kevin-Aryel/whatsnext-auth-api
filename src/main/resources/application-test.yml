@@ -20,3 +20,6 @@ rate-limit:
   register:
     capacity: 100
     refill-seconds: 60
+  refresh:
+    capacity: 100
+    refill-seconds: 60

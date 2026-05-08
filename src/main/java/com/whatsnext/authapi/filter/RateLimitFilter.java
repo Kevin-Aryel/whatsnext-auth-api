@@ -28,6 +28,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     private final Map<String, Bucket> loginBuckets = new ConcurrentHashMap<>();
     private final Map<String, Bucket> registerBuckets = new ConcurrentHashMap<>();
+    private final Map<String, Bucket> refreshBuckets = new ConcurrentHashMap<>();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -37,15 +38,22 @@ public class RateLimitFilter extends OncePerRequestFilter {
         String ip = extractClientIp(request);
 
         RateLimitConfig.EndpointConfig matchedConfig = switch (path) {
-            case "/api/v1/auth/login" -> rateLimitConfig.getLogin();
+            case "/api/v1/auth/login"    -> rateLimitConfig.getLogin();
             case "/api/v1/auth/register" -> rateLimitConfig.getRegister();
-            default -> null;
+            case "/api/v1/auth/refresh"  -> rateLimitConfig.getRefresh();
+            default                      -> null;
+        };
+
+        Map<String, Bucket> targetBuckets = switch (path) {
+            case "/api/v1/auth/login"    -> loginBuckets;
+            case "/api/v1/auth/register" -> registerBuckets;
+            case "/api/v1/auth/refresh"  -> refreshBuckets;
+            default                      -> null;
         };
 
         Bucket bucket = null;
-        if (matchedConfig != null) {
-            Map<String, Bucket> buckets = path.endsWith("/login") ? loginBuckets : registerBuckets;
-            bucket = buckets.computeIfAbsent(ip, k -> buildBucket(matchedConfig));
+        if (matchedConfig != null && targetBuckets != null) {
+            bucket = targetBuckets.computeIfAbsent(ip, k -> buildBucket(matchedConfig));
         }
 
         if (bucket != null && !bucket.tryConsume(1)) {
@@ -70,10 +78,12 @@ public class RateLimitFilter extends OncePerRequestFilter {
     }
 
     private String extractClientIp(HttpServletRequest request) {
-        String forwarded = request.getHeader("X-Forwarded-For");
-        if (forwarded != null && !forwarded.isBlank()) {
-            return forwarded.split(",")[0].trim();
-        }
+        // X-Forwarded-For is client-controlled and trivially spoofable when read here:
+        // a fresh value per request gives each fake IP its own bucket, bypassing the limit.
+        // Render's edge keeps the immediate remote address tamper-proof; if the app moves
+        // behind another proxy, configure server.forward-headers-strategy=native so Tomcat's
+        // RemoteIpValve rewrites getRemoteAddr() from a vetted X-Forwarded-For only when the
+        // hop comes from a trusted proxy CIDR.
         return request.getRemoteAddr();
     }
 }

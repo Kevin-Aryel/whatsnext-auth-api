@@ -13,6 +13,7 @@ public class RateLimitConfig {
 
     private EndpointConfig login = new EndpointConfig(5, 60);
     private EndpointConfig register = new EndpointConfig(3, 60);
+    private EndpointConfig refresh = new EndpointConfig(10, 60);
 
     @Getter
     @Setter

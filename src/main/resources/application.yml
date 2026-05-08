@@ -23,6 +23,9 @@ rate-limit:
   register:
     capacity: ${RATE_LIMIT_REGISTER_CAPACITY:3}
     refill-seconds: 60
+  refresh:
+    capacity: ${RATE_LIMIT_REFRESH_CAPACITY:10}
+    refill-seconds: 60
 
 management:
   endpoints:
