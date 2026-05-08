@@ -87,7 +87,7 @@ public class SecurityConfig {
         return (request, response, authException) -> {
             response.setStatus(401);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            ErrorResponse error = ErrorResponse.of("UNAUTHORIZED", "Unauthorized", "Authentication required");
+            ErrorResponse error = ErrorResponse.of("401", "Unauthorized", "Authentication required");
             response.getWriter().write(objectMapper.writeValueAsString(error));
         };
     }
