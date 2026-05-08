@@ -8,6 +8,7 @@ node_modules/
 *.properties
 docs/*
 .allure
+allure-results/
 ### STS ###
 .apt_generated
 .classpath

@@ -107,6 +107,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
@@ -158,7 +159,10 @@
                         <id>pre-integration-test</id>
                         <goals><goal>start</goal></goals>
                         <configuration>
-                            <profiles>test</profiles>
+                            <profiles>
+                                <profile>test</profile>
+                                <profile>e2e</profile>
+                            </profiles>
                             <useTestClasspath>true</useTestClasspath>
                         </configuration>
                     </execution>

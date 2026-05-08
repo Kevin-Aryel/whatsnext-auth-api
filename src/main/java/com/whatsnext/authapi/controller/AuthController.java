@@ -51,9 +51,11 @@ public class AuthController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Logout and blacklist tokens")
     @ApiResponse(responseCode = "204", description = "Logged out")
+    @ApiResponse(responseCode = "401", description = "Missing or invalid bearer token")
     public void logout(@RequestHeader("Authorization") String authHeader,
-                       @Valid @RequestBody RefreshRequest request) {
+                       @RequestBody(required = false) RefreshRequest request) {
         String token = authHeader.substring(7);
-        authService.logout(token, request.refreshToken());
+        String refreshToken = (request != null) ? request.refreshToken() : null;
+        authService.logout(token, refreshToken);
     }
 }

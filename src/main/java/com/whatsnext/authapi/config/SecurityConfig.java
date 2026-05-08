@@ -1,5 +1,7 @@
 package com.whatsnext.authapi.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.whatsnext.authapi.dto.response.ErrorResponse;
 import com.whatsnext.authapi.filter.JwtAuthenticationFilter;
 import com.whatsnext.authapi.filter.RateLimitFilter;
 import com.whatsnext.authapi.repository.UserRepository;
@@ -37,6 +39,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final RateLimitFilter rateLimitFilter;
     private final UserRepository userRepository;
+    private final ObjectMapper objectMapper;
 
     @Value("${cors.allowed-origins}")
     private String allowedOrigins;
@@ -49,7 +52,9 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/v1/auth/**",
+                                "/api/v1/auth/register",
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/refresh",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
@@ -82,7 +87,8 @@ public class SecurityConfig {
         return (request, response, authException) -> {
             response.setStatus(401);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.getWriter().write("{\"status\":401,\"error\":\"Unauthorized\",\"message\":\"Authentication required\",\"path\":\"" + request.getRequestURI() + "\"}");
+            ErrorResponse error = ErrorResponse.of("401", "Unauthorized", "Authentication required");
+            response.getWriter().write(objectMapper.writeValueAsString(error));
         };
     }
 
