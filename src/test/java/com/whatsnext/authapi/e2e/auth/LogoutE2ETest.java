@@ -19,8 +19,8 @@ import static org.hamcrest.Matchers.*;
 @Feature("Logout")
 public class LogoutE2ETest {
 
-    private static final String UNAUTHORIZED_CODE           = "401";
-    private static final String UNAUTHORIZED_TITLE          = "UNAUTHORIZED";
+    private static final String UNAUTHORIZED_CODE           = String.valueOf(SC_UNAUTHORIZED);
+    private static final String UNAUTHORIZED_TITLE          = "Unauthorized";
     private static final String INVALID_CREDENTIALS_DETAIL  = "Invalid credentials";
 
     private AuthClient authClient;

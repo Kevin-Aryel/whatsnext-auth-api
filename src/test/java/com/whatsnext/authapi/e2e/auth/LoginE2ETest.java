@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.*;
 public class LoginE2ETest {
 
     private static final String INVALID_CREDENTIALS_DETAIL = "Invalid credentials";
+    private static final String UNAUTHORIZED_TITLE          = "Unauthorized";
 
     private AuthClient authClient;
     private UserCredentialRecord validUserCredential;
@@ -45,8 +46,8 @@ public class LoginE2ETest {
                 .statusCode(SC_UNAUTHORIZED)
                 .body(
                         "errors[0].code", equalTo(String.valueOf(SC_UNAUTHORIZED)),
-                        "errors[0].title", equalTo(INVALID_CREDENTIALS_DETAIL),
-                        "errors[0].detail", equalTo(""),
+                        "errors[0].title", equalTo(UNAUTHORIZED_TITLE),
+                        "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL),
                         "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
                 );
     }
@@ -58,8 +59,8 @@ public class LoginE2ETest {
                 .statusCode(SC_UNAUTHORIZED)
                 .body(
                         "errors[0].code", equalTo(String.valueOf(SC_UNAUTHORIZED)),
-                        "errors[0].title", equalTo(INVALID_CREDENTIALS_DETAIL),
-                        "errors[0].detail", equalTo(""),
+                        "errors[0].title", equalTo(UNAUTHORIZED_TITLE),
+                        "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL),
                         "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
                 );
     }
