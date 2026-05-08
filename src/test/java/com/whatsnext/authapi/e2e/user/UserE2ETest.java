@@ -43,9 +43,9 @@ public class UserE2ETest {
 
         userClient.getProfile(accessToken)
                 .statusCode(SC_OK)
+                .body(JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/user-response-schema.json"))
                 .body("email", equalTo(existingUser.email()),
-                        "role",  equalTo("USER"),
-                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/user-profile-schema.json")
+                        "role",  equalTo("USER")
                 );
     }
 
