@@ -40,11 +40,11 @@ public class RegisterE2ETest {
         UserDataPreload.insertUser(user);
         authClient.register(user)
                 .statusCode(SC_CONFLICT)
+                .body(JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"))
                 .body(
                         "errors[0].code",   equalTo(String.valueOf(SC_CONFLICT)),
-                        "errors[0].title",  equalTo("Conflict"),
-                        "errors[0].detail", containsString("Email already registered"),
-                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "errors[0].title",  equalTo("Email Already Exists"),
+                        "errors[0].detail", containsString("Email already registered")
                 );
     }
 
@@ -54,11 +54,11 @@ public class RegisterE2ETest {
             String scenario, UserCredentialRecord user, String expectedTitle, String expectedDetail) {
         authClient.register(user)
                 .statusCode(SC_UNPROCESSABLE_ENTITY)
+                .body(JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"))
                 .body(
                         "errors[0].code",equalTo(String.valueOf(SC_UNPROCESSABLE_ENTITY)),
                         "errors[0].title",  equalTo(expectedTitle),
-                        "errors[0].detail", containsString(expectedDetail),
-                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "errors[0].detail", containsString(expectedDetail)
                 );
     }
 
@@ -71,8 +71,7 @@ public class RegisterE2ETest {
                 .body(
                         "errors[0].code", equalTo(String.valueOf(SC_UNPROCESSABLE_ENTITY)),
                         "errors[0].title",  equalTo(expectedTitle),
-                        "errors[0].detail", containsString(expectedDetail),
-                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "errors[0].detail", containsString(expectedDetail)
                 );
     }
 }

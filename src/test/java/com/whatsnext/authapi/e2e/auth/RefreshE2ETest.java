@@ -54,10 +54,11 @@ public class RefreshE2ETest {
 
         authClient.refresh(refreshToken)
                 .statusCode(SC_UNAUTHORIZED)
+                .body(JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"))
                 .body("errors[0].code",   equalTo(UNAUTHORIZED_CODE),
                         "errors[0].title",  equalTo(UNAUTHORIZED_TITLE),
-                        "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL),
-                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"));
+                        "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL)
+                );
     }
 
     @Test
@@ -69,10 +70,11 @@ public class RefreshE2ETest {
 
         authClient.refresh(oldRefreshToken)
                 .statusCode(SC_UNAUTHORIZED)
+                .body(JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"))
                 .body("errors[0].code",   equalTo(UNAUTHORIZED_CODE),
                         "errors[0].title",  equalTo(UNAUTHORIZED_TITLE),
-                        "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL),
-                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"));
+                        "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL)
+                );
     }
 
     @Test(dataProvider = "invalidRefreshTokens", dataProviderClass = RefreshDataProvider.class)
@@ -80,9 +82,10 @@ public class RefreshE2ETest {
     public void refreshWithInvalidToken(String token, String expectedDetail) {
         authClient.refresh(token)
                 .statusCode(SC_UNAUTHORIZED)
+                .body(JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"))
                 .body("errors[0].code",   equalTo(UNAUTHORIZED_CODE),
                         "errors[0].title",  equalTo(UNAUTHORIZED_TITLE),
-                        "errors[0].detail", equalTo(expectedDetail),
-                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"));
+                        "errors[0].detail", equalTo(expectedDetail)
+                );
     }
 }

@@ -9,6 +9,8 @@ import io.qameta.allure.*;
 import io.restassured.module.jsv.JsonSchemaValidator;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
+
 import java.sql.SQLException;
 
 import static org.apache.http.HttpStatus.*;
@@ -20,7 +22,6 @@ public class LoginE2ETest {
 
     private static final String INVALID_CREDENTIALS_DETAIL = "Invalid credentials";
     private static final String UNAUTHORIZED_TITLE          = "Unauthorized";
-
     private AuthClient authClient;
     private UserCredentialRecord validUserCredential;
 
@@ -34,7 +35,7 @@ public class LoginE2ETest {
     @Test
     @Story("Login com credenciais válidas")
     public void loginWithValidCredentials() {
-        authClient.login(validUserCredential.email(), validUserCredential.password() )
+        authClient.login(validUserCredential.email(), validUserCredential.password()).assertThat()
                 .statusCode(SC_OK)
                 .body(JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/auth-response-schema.json"));
     }
@@ -44,11 +45,11 @@ public class LoginE2ETest {
     public void loginWithNonexistentEmail() {
         authClient.login("ghost@test.com", "Test@1234!" )
                 .statusCode(SC_UNAUTHORIZED)
+                .body(JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"))
                 .body(
                         "errors[0].code", equalTo(String.valueOf(SC_UNAUTHORIZED)),
                         "errors[0].title", equalTo(UNAUTHORIZED_TITLE),
-                        "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL),
-                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL)
                 );
     }
 
@@ -57,11 +58,11 @@ public class LoginE2ETest {
     public void loginWithWrongPassword() {
         authClient.login( validUserCredential.email(), "WrongPass@99!")
                 .statusCode(SC_UNAUTHORIZED)
+                .body(JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"))
                 .body(
                         "errors[0].code", equalTo(String.valueOf(SC_UNAUTHORIZED)),
                         "errors[0].title", equalTo(UNAUTHORIZED_TITLE),
-                        "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL),
-                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL)
                 );
     }
 
@@ -70,11 +71,11 @@ public class LoginE2ETest {
     public void loginWithInvalidFields(String email, String password, String expectedDetail) {
         authClient.login(email,password)
                 .statusCode(SC_UNPROCESSABLE_ENTITY)
+                .body(JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"))
                 .body(
                         "errors[0].code", equalTo(String.valueOf(SC_UNPROCESSABLE_ENTITY)),
                         "errors[0].title", equalTo("Validation Error"),
-                        "errors[0].detail", equalTo(expectedDetail),
-                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "errors[0].detail", equalTo(expectedDetail)
                 );
     }
 }

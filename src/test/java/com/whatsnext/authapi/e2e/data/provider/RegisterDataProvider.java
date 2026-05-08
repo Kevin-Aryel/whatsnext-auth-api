@@ -36,7 +36,7 @@ public class RegisterDataProvider {
                         "senha vazia",
                         new UserCredentialRecord("Test User", "user@test.com", ""),
                         "Validation Error",
-                        "Password is required"
+                        "Password must be between 8 and 72 characters"
                 },
                 {
                         "senha nula",
@@ -72,7 +72,7 @@ public class RegisterDataProvider {
                         "nome vazio",
                         new UserCredentialRecord("", "user@test.com", "Test@1234!"),
                         "Validation Error",
-                        "Name is required"
+                        "Name must be between 2 and 100 characters"
                 },
                 {
                         "nome menor que 2 caracteres",

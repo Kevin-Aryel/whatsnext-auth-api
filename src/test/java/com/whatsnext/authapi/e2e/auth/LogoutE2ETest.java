@@ -46,10 +46,10 @@ public class LogoutE2ETest {
     public void logoutWithoutToken() {
         authClient.logoutWithoutToken()
                 .statusCode(SC_UNAUTHORIZED)
+                .body(JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"))
                 .body("errors[0].code",   equalTo(UNAUTHORIZED_CODE),
                         "errors[0].title",  equalTo(UNAUTHORIZED_TITLE),
-                        "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL),
-                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "errors[0].detail", equalTo("Authentication required")
                 );
     }
 }

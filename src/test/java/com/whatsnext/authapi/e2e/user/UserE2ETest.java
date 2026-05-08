@@ -54,10 +54,10 @@ public class UserE2ETest {
     public void getProfileWithoutToken() {
         userClient.getProfileWithoutToken()
                 .statusCode(SC_UNAUTHORIZED)
+                .body(JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"))
                 .body("errors[0].code",   equalTo(UNAUTHORIZED_CODE),
                         "errors[0].title",  equalTo(UNAUTHORIZED_TITLE),
-                        "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL),
-                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "errors[0].detail", equalTo("Authentication required")
                 );
     }
 
@@ -66,10 +66,10 @@ public class UserE2ETest {
     public void getProfileWithInvalidToken() {
         userClient.getProfile("token.invalido.assinado")
                 .statusCode(SC_UNAUTHORIZED)
+                .body(JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"))
                 .body("errors[0].code",   equalTo(UNAUTHORIZED_CODE),
                         "errors[0].title",  equalTo(UNAUTHORIZED_TITLE),
-                        "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL),
-                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "errors[0].detail", equalTo("Invalid token")
                 );
     }
 
@@ -77,16 +77,14 @@ public class UserE2ETest {
     @Story("Perfil com token blacklisted após logout")
     public void getProfileWithBlacklistedToken() {
         String accessToken = AuthDataPreload.accessToken(existingUser);
-
         authClient.logout(accessToken)
                 .statusCode(SC_NO_CONTENT);
-
         userClient.getProfile(accessToken)
                 .statusCode(SC_UNAUTHORIZED)
+                .body(JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json"))
                 .body("errors[0].code",   equalTo(UNAUTHORIZED_CODE),
                         "errors[0].title",  equalTo(UNAUTHORIZED_TITLE),
-                        "errors[0].detail", equalTo(INVALID_CREDENTIALS_DETAIL),
-                        "", JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/error-response-schema.json")
+                        "errors[0].detail", equalTo("Token has been revoked")
                 );
     }
 }
