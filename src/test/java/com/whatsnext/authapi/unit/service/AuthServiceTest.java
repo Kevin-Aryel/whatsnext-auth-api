@@ -13,6 +13,7 @@ import com.whatsnext.authapi.repository.RefreshTokenRepository;
 import com.whatsnext.authapi.repository.UserRepository;
 import com.whatsnext.authapi.service.AuthService;
 import com.whatsnext.authapi.service.JwtService;
+import com.whatsnext.authapi.service.LoginAttemptService;
 import com.whatsnext.authapi.service.PasswordValidator;
 import com.whatsnext.authapi.service.TokenBlacklistService;
 import org.mockito.Mock;
@@ -50,11 +51,12 @@ class AuthServiceTest {
         JwtService jwtService = new JwtService(config);
         PasswordValidator passwordValidator = new PasswordValidator();
         encoder = new BCryptPasswordEncoder(12);
+        LoginAttemptService loginAttemptService = new LoginAttemptService(5, 15);
 
         authService = new AuthService(
             userRepository, refreshTokenRepository,
             tokenBlacklistService, jwtService,
-            passwordValidator, encoder, config
+            passwordValidator, encoder, config, loginAttemptService
         );
     }
 
@@ -194,5 +196,26 @@ class AuthServiceTest {
         // Old token must be deleted atomically — never re-saved with used=true.
         verify(refreshTokenRepository).deleteById(tokenId);
         verify(refreshTokenRepository, never()).save(existing);
+    }
+
+    @Test
+    void login_whenAccountLocked_shouldThrowAccountLockedException() {
+        JwtConfig config = new JwtConfig();
+        config.setSecret("dGVzdFNlY3JldEtleUZvclVuaXRUZXN0czEyMzQ1Njc4OTAxMjM0NTY=");
+        config.setAccessExpiration(900L);
+        config.setRefreshExpiration(604800L);
+
+        LoginAttemptService lockedService = new LoginAttemptService(5, 15);
+        for (int i = 0; i < 5; i++) lockedService.recordFailure("locked@example.com");
+
+        AuthService lockedAuthService = new AuthService(
+            userRepository, refreshTokenRepository,
+            tokenBlacklistService, new JwtService(config),
+            new PasswordValidator(), encoder, config, lockedService
+        );
+
+        assertThatThrownBy(() ->
+            lockedAuthService.login(new LoginRequest("locked@example.com", "any")))
+            .isInstanceOf(AccountLockedException.class);
     }
 }

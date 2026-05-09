@@ -30,6 +30,7 @@ public class AuthService {
     private final PasswordValidator passwordValidator;
     private final PasswordEncoder passwordEncoder;
     private final JwtConfig jwtConfig;
+    private final LoginAttemptService loginAttemptService;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -51,13 +52,22 @@ public class AuthService {
 
     @Transactional
     public AuthResponse login(LoginRequest request) {
+        if (loginAttemptService.isLocked(request.email())) {
+            throw new AccountLockedException("Account temporarily locked due to too many failed attempts");
+        }
+
         User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new InvalidTokenException("Invalid credentials"));
+                .orElseThrow(() -> {
+                    loginAttemptService.recordFailure(request.email());
+                    return new InvalidTokenException("Invalid credentials");
+                });
 
         if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+            loginAttemptService.recordFailure(request.email());
             throw new InvalidTokenException("Invalid credentials");
         }
 
+        loginAttemptService.recordSuccess(request.email());
         return generateTokenPair(user);
     }
 

@@ -9,6 +9,7 @@
             <class name="com.whatsnext.authapi.unit.service.AuthServiceTest"/>
             <class name="com.whatsnext.authapi.unit.service.TokenBlacklistServiceTest"/>
             <class name="com.whatsnext.authapi.unit.service.TokenCleanupServiceTest"/>
+            <class name="com.whatsnext.authapi.unit.service.LoginAttemptServiceTest"/>
         </classes>
     </test>
 
@@ -23,6 +24,7 @@
         <classes>
             <class name="com.whatsnext.authapi.unit.filter.RateLimitFilterTest"/>
             <class name="com.whatsnext.authapi.unit.filter.JwtAuthenticationFilterTest"/>
+            <class name="com.whatsnext.authapi.unit.filter.RequestIdFilterTest"/>
         </classes>
     </test>
 

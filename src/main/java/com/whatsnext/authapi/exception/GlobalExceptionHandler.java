@@ -47,6 +47,13 @@ public class GlobalExceptionHandler {
         return ErrorResponse.of(code(HttpStatus.UNAUTHORIZED), "Unauthorized", "Invalid credentials");
     }
 
+    @ExceptionHandler(AccountLockedException.class)
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    public ErrorResponse handleAccountLocked(AccountLockedException e) {
+        return ErrorResponse.of(code(HttpStatus.TOO_MANY_REQUESTS), "Account Locked",
+            "Too many failed login attempts. Try again in 15 minutes.");
+    }
+
     @ExceptionHandler(PasswordTooWeakException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public ErrorResponse handlePasswordTooWeak(PasswordTooWeakException e) {

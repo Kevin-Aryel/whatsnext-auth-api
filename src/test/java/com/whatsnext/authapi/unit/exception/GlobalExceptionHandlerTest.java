@@ -1,6 +1,7 @@
 package com.whatsnext.authapi.unit.exception;
 
 import com.whatsnext.authapi.dto.response.ErrorResponse;
+import com.whatsnext.authapi.exception.AccountLockedException;
 import com.whatsnext.authapi.exception.EmailAlreadyExistsException;
 import com.whatsnext.authapi.exception.GlobalExceptionHandler;
 import com.whatsnext.authapi.exception.InvalidTokenException;
@@ -165,6 +166,16 @@ class GlobalExceptionHandlerTest {
         assertThat(resp.errors().get(0).code()).isEqualTo("404");
         assertThat(resp.errors().get(0).title()).isEqualTo("Not Found");
         assertThat(resp.errors().get(0).detail()).isEqualTo("Resource not found");
+    }
+
+    @Test
+    void handleAccountLocked_returns429() {
+        ErrorResponse resp = handler.handleAccountLocked(
+            new AccountLockedException("locked"));
+
+        assertThat(resp.errors().get(0).code()).isEqualTo("429");
+        assertThat(resp.errors().get(0).title()).isEqualTo("Account Locked");
+        assertThat(resp.errors().get(0).detail()).contains("Too many failed login attempts");
     }
 
     @Test
