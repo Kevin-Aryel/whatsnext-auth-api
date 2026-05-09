@@ -1,3 +1,9 @@
+server:
+  # Render (and most PaaS) inject the listen port via the PORT env var; locally we
+  # fall back to 8080. Without this Spring binds 8080 and Render's port scanner
+  # times out with "No open ports detected" before health-check can run.
+  port: ${PORT:8080}
+
 spring:
   application:
     name: whatsnext-auth-api
