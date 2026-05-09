@@ -32,4 +32,10 @@
         </classes>
     </test>
 
+    <test name="Config Tests">
+        <classes>
+            <class name="com.whatsnext.authapi.unit.config.SecurityHeadersTest"/>
+        </classes>
+    </test>
+
 </suite>
