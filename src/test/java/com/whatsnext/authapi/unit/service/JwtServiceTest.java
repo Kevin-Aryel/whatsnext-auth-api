@@ -5,9 +5,14 @@ import com.whatsnext.authapi.domain.entity.User;
 import com.whatsnext.authapi.domain.enums.Role;
 import com.whatsnext.authapi.exception.InvalidTokenException;
 import com.whatsnext.authapi.service.JwtService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
@@ -83,5 +88,37 @@ class JwtServiceTest {
     void extractSubject_withMalformedToken_shouldThrowInvalidTokenException() {
         assertThatThrownBy(() -> jwtService.extractSubject("not.a.jwt"))
             .isInstanceOf(InvalidTokenException.class);
+    }
+
+    @Test
+    void generateAccessToken_shouldContainRolesClaim() {
+        User u = User.builder()
+                .email("test@example.com")
+                .role(Role.USER)
+                .build();
+
+        String token = jwtService.generateAccessToken(u);
+
+        Claims claims = Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(
+                        Decoders.BASE64.decode("dGVzdFNlY3JldEtleUZvclVuaXRUZXN0czEyMzQ1Njc4OTAxMjM0NTY=")))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        assertThat(claims.get("roles", String.class)).isEqualTo("ROLE_USER");
+    }
+
+    @Test
+    void extractRoles_shouldReturnAuthoritiesFromToken() {
+        User u = User.builder()
+                .email("test@example.com")
+                .role(Role.USER)
+                .build();
+
+        String token = jwtService.generateAccessToken(u);
+        List<String> roles = jwtService.extractRoles(token);
+
+        assertThat(roles).containsExactly("ROLE_USER");
     }
 }

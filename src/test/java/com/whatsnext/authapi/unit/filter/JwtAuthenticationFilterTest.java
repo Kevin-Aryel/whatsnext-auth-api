@@ -12,24 +12,19 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class JwtAuthenticationFilterTest {
 
     @Mock private JwtService jwtService;
-    @Mock private UserDetailsService userDetailsService;
     @Mock private TokenBlacklistService tokenBlacklistService;
     @Mock private FilterChain filterChain;
 
@@ -40,7 +35,7 @@ class JwtAuthenticationFilterTest {
     @BeforeMethod
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        filter = new JwtAuthenticationFilter(jwtService, userDetailsService,
+        filter = new JwtAuthenticationFilter(jwtService,
             tokenBlacklistService, new ObjectMapper());
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
@@ -57,7 +52,7 @@ class JwtAuthenticationFilterTest {
         filter.doFilter(request, response, filterChain);
 
         verify(filterChain).doFilter(request, response);
-        verifyNoInteractions(jwtService, userDetailsService, tokenBlacklistService);
+        verifyNoInteractions(jwtService, tokenBlacklistService);
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
     }
 
@@ -68,7 +63,7 @@ class JwtAuthenticationFilterTest {
         filter.doFilter(request, response, filterChain);
 
         verify(filterChain).doFilter(request, response);
-        verifyNoInteractions(jwtService, userDetailsService, tokenBlacklistService);
+        verifyNoInteractions(jwtService, tokenBlacklistService);
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
     }
 
@@ -77,19 +72,20 @@ class JwtAuthenticationFilterTest {
         String token = "valid.jwt.token";
         request.addHeader("Authorization", "Bearer " + token);
 
-        UserDetails userDetails = new User("user@example.com", "pwd",
-            Collections.emptyList());
         when(tokenBlacklistService.isBlacklisted(token)).thenReturn(false);
         when(jwtService.extractSubject(token)).thenReturn("user@example.com");
-        when(userDetailsService.loadUserByUsername("user@example.com")).thenReturn(userDetails);
-        when(jwtService.isTokenValid(token, userDetails)).thenReturn(true);
+        when(jwtService.extractRoles(token)).thenReturn(List.of("ROLE_USER"));
+        when(jwtService.isTokenExpired(token)).thenReturn(false);
 
         filter.doFilter(request, response, filterChain);
 
         verify(filterChain).doFilter(request, response);
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNotNull();
         assertThat(SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-            .isEqualTo(userDetails);
+            .isEqualTo("user@example.com");
+        assertThat(SecurityContextHolder.getContext().getAuthentication().getAuthorities())
+            .extracting(Object::toString)
+            .containsExactly("ROLE_USER");
     }
 
     @Test
@@ -137,16 +133,14 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
-    void doFilter_whenTokenSubjectMismatch_doesNotSetAuthenticationButContinuesChain() throws Exception {
-        String token = "subject.mismatch.token";
+    void doFilter_whenTokenExpiredCheckTrue_doesNotSetAuthenticationButContinuesChain() throws Exception {
+        String token = "expired.but.parseable.token";
         request.addHeader("Authorization", "Bearer " + token);
 
-        UserDetails userDetails = new User("user@example.com", "pwd",
-            Collections.emptyList());
         when(tokenBlacklistService.isBlacklisted(token)).thenReturn(false);
         when(jwtService.extractSubject(token)).thenReturn("user@example.com");
-        when(userDetailsService.loadUserByUsername("user@example.com")).thenReturn(userDetails);
-        when(jwtService.isTokenValid(token, userDetails)).thenReturn(false);
+        when(jwtService.extractRoles(token)).thenReturn(List.of("ROLE_USER"));
+        when(jwtService.isTokenExpired(token)).thenReturn(true);
 
         filter.doFilter(request, response, filterChain);
 
