@@ -37,6 +37,10 @@
           "type": "string",
           "format": "date-time",
           "maxLength": 20
+        },
+        "requestId": {
+          "type": "string",
+          "maxLength": 64
         }
       }
     }
