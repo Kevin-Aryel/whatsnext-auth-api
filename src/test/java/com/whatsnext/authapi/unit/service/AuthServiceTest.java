@@ -168,4 +168,31 @@ class AuthServiceTest {
         assertThatThrownBy(() -> authService.refresh(new RefreshRequest("expired-token")))
             .isInstanceOf(TokenExpiredException.class);
     }
+
+    @Test
+    void refresh_shouldDeleteOldTokenAndNotMarkUsed() {
+        UUID tokenId = UUID.randomUUID();
+        User user = User.builder()
+            .id(UUID.randomUUID())
+            .email("rotate@example.com")
+            .role(Role.USER)
+            .name("User")
+            .build();
+        RefreshToken existing = RefreshToken.builder()
+            .id(tokenId)
+            .token("rotate-token")
+            .used(false)
+            .expiresAt(Instant.now().plusSeconds(3600))
+            .user(user)
+            .build();
+
+        when(refreshTokenRepository.findByToken("rotate-token")).thenReturn(Optional.of(existing));
+        when(refreshTokenRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        authService.refresh(new RefreshRequest("rotate-token"));
+
+        // Old token must be deleted atomically — never re-saved with used=true.
+        verify(refreshTokenRepository).deleteById(tokenId);
+        verify(refreshTokenRepository, never()).save(existing);
+    }
 }

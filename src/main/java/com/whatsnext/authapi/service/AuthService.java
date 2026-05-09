@@ -73,10 +73,13 @@ public class AuthService {
             throw new TokenExpiredException();
         }
 
-        existing.setUsed(true);
-        refreshTokenRepository.save(existing);
+        // Delete instead of marking used: deleteById is atomic at the DB level, so a
+        // second concurrent refresh races into "row not found" -> InvalidTokenException
+        // instead of both seeing isUsed()==false and rotating twice off the same token.
+        User user = existing.getUser();
+        refreshTokenRepository.deleteById(existing.getId());
 
-        return generateTokenPair(existing.getUser());
+        return generateTokenPair(user);
     }
 
     @Transactional
